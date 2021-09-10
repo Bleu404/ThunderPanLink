@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name         一键复制美剧链接
-// @version      1.6.2
-// @description  识别常用网址的美剧链接，美剧天堂添加跳转豆瓣、IMDB入口，原始匹配网站云盘可以直接进入，可识别用户匹配网站中的链接。
+// @version      1.6.5
+// @description  识别常用网址的美剧链接，美剧天堂添加跳转豆瓣、IMDB入口，原始匹配网站云盘可以直接进入，可识别用户匹配网站中的链接。附本人写的字幕翻译程序，下载地址在附加信息中。
 // @author       Bleu
+// @compatible   edge Tampermonkey
+// @license      MIT
 // @supportURL   https://greasyfork.org/zh-CN/scripts/430126-一键复制美剧链接/feedback
-// @match        https://www.meijutt.tv/*
+// @match        https://*.meijutt.tv/*
 // @match        https://www.22tu.tv/*
 // @match        https://www.kpkuang.com/*
 // @match        https://www.mp4er.com/*
@@ -64,9 +66,13 @@
 
         getURLsign() {
             let nameFU = GM_info.script.options.override.use_matches;
-            nameFU.length != 0 && webName.push(nameFU);
+            nameFU.length != 0 && nameFU.forEach(function (value) {
+                if (pageURL.match(value)) {
+                    sign = value
+                }
+            })
             webName.forEach(function (value) {
-                if (pageURL.search(value) >= 0) {
+                if (pageURL.match(value)) {
                     sign = value
                 }
             })
@@ -131,6 +137,14 @@
                     arr.push(value);
                 }
             })
+            if (sign == 'kpkuang') {
+                let end;
+                let nm = $(".uk-width-expand.uk-first-column").text();
+                nm = nm.match(/第\d*集/)[0];
+                nm = nm.replace('第', '').replace('集', '');
+                end = arr.length / Math.ceil(arr.length / nm);
+                arr = arr.slice(0, end);
+            }
             return arr;
         },
 
