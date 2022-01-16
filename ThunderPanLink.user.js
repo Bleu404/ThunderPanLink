@@ -1,10 +1,12 @@
 // ==UserScript==
-// @name         迅雷云盘获取直链
+// @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.4.7
-// @description  获取迅雷云盘的直接下载链接，可利用本地播放器看视频，可利用其他工具下载（如浏览器下载，idman，curl命令行，Xdown，Motrix，Aria2）
+// @version      1.5.0
+// @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
+// @compatible   chrome Tampermonkey
+// @compatible   firefox Tampermonkey
 // @license      MIT
 // @icon         https://pan.xunlei.com/icon.png
 // @supportURL   https://greasyfork.org/zh-CN/scripts/431256/feedback
@@ -40,6 +42,11 @@
             'port': $('#config_port').val().trim(),
             'token': $('#config_token').val().trim(),
         };
+        let jgy = {
+            'path': $('#jgy_path').val().trim(),
+            'account': $('#jgy_account').val().trim(),
+            'password': $('#jgy_password').val().trim(),
+        };
         let qualityAry = $('#bleu_select').val();
         qualityAry = qualityAry === 'highlow' ? ['selected', ''] : ['', 'selected'];
         let checkAry = [],
@@ -69,6 +76,7 @@
             'local_path': local_path,
             'displays': checkAry,
             'aria2': aria2,
+            'jgy':jgy,
             'quality': qualityAry,
             'autoClick': autoClick,
         }));
@@ -88,7 +96,7 @@
                 .bleu_a:hover{color: #3F85FE}
                 .bleu_sa_footer{margin: 0;padding-top: 20px;}
                 .bleu_sa_title_min{font-size: 20px;padding: 0;}
-                .bleu_sa_popup_min{padding: 0 0 0;text-align-last: right;width: fit-content;}
+                .bleu_sa_popup_min{padding: 0 0 0;width: auto;}
                 .bleu_config{position: absolute;left: 5%;bottom: 10%;width: 60px;height: 60px;line-height: 60px;border-radius: 50%;cursor: pointer;font-size: 13px;background-color: #2670ea;color: #fff;text-align: center;}
                 .bleu_config:hover{background-color: #3F85FE}
                 .bleu_config_item{border-radius: 10px;font-size: 20px;margin: 12px 50px;color: #fff;background-color: #3F85FE;box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);}
@@ -116,16 +124,7 @@
                 if (running.runStatus) {
                     return
                 }
-                linkConfig = JSON.parse(localStorage.getItem("linkConfig")) || {
-                    'local_path': 'D:\\Downloads',
-                    'displays': ['checked', 'checked', 'checked', 'checked', 'checked', 'checked', '',''],
-                    'aria2': {
-                        'ip': 'http://localhost',
-                        'port': '16800',
-                        'token': ''
-                    },
-                    'quality': ['selected', ''],
-                };
+                main.isResetConfig();
                 try {
                     running.needHandle && await main.getAllInfo();
                 } catch (error) {
@@ -135,7 +134,7 @@
                 }
                 let $swalHtml = $(`
             <div><input type="button" style="display:${linkConfig.displays[0]==='checked'?'block':'none'}" class="btn_bleu xdown" value="复制迅雷直链"></input></div>
-            <div><input type="button" style="display:${linkConfig.displays[1]==='checked'?'block':'none'}" class="btn_bleu" value="idman下载.txt"></input></div>
+            <div><input type="button" style="display:${linkConfig.displays[1]==='checked'?'block':'none'}" class="btn_bleu xdown" value="复制idm下载链接"></input></div>
             <div><input type="button" style="display:${linkConfig.displays[2]==='checked'?'block':'none'}" class="btn_bleu" value="curl下载.txt"></input></div>
             <div><input type="button" style="display:${linkConfig.displays[3]==='checked'?'block':'none'}" class="btn_bleu xdown" value="复制Xdown下载链接"></input></div>
             <div><input type="button" style="display:${linkConfig.displays[4]==='checked'?'block':'none'}" class="btn_bleu" value="基于aria2发送RPC任务"></input></div>
@@ -170,23 +169,14 @@
                 }
             })
             $bleu_config.on('click', function () {
-                linkConfig = JSON.parse(localStorage.getItem("linkConfig")) || {
-                    'local_path': 'D:\\Downloads',
-                    'displays': ['checked', 'checked', 'checked', 'checked', 'checked', 'checked', '',''],
-                    'aria2': {
-                        'ip': 'http://localhost',
-                        'port': '16800',
-                        'token': ''
-                    },
-                    'quality': ['selected', ''],
-                };
+                main.isResetConfig();
                 let swalConfig = `
                 <div class="bleu_config_item"><b>本地下载路径</b>
                 <p><label>目录</label><input type="text" class="bleu_inp" id="config_path" value="${linkConfig.local_path}"/></p>
                 </div>
                 <div class="bleu_config_item"><b>功能按钮显示</b>
                 <p><input type="checkbox" ${linkConfig.displays[0]} class="td-checkbox__inner bleu"></input><label>显示“复制迅雷直链”</label></p>
-                <p><input type="checkbox" ${linkConfig.displays[1]} class="td-checkbox__inner bleu"></input><label>显示“idman下载.txt”</label></p>
+                <p><input type="checkbox" ${linkConfig.displays[1]} class="td-checkbox__inner bleu"></input><label>显示“复制idm下载链接”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[2]} class="td-checkbox__inner bleu"></input><label>显示“curl下载.txt”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[3]} class="td-checkbox__inner bleu"></input><label>显示“复制Xdown下载链接”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[4]} class="td-checkbox__inner bleu"></input><label>显示“基于aria2发送RPC任务”</label></p>
@@ -203,9 +193,13 @@
                 <option value="highlow" ${linkConfig.quality[0]}>从高到低</option>
                 <option value="lowhigh" ${linkConfig.quality[1]}>从低到高</option>
                 </select></p>
+                <b>列表存坚果云</b>
+                <p><label>文件夹</label><input type="text" class="bleu_inp" id="jgy_path" value="${linkConfig.jgy.path}"/></p>
+                <p><label>账户</label><input type="text" class="bleu_inp" id="jgy_account" value="${linkConfig.jgy.account}"/></p>
+                <p><label>授权密码</label><input type="text" class="bleu_inp" id="jgy_password" value="${linkConfig.jgy.password}"/></p>
                 </div>
                 <div class="bleu_config_item"><b>视频专用下载</b>
-                <p><input type="checkbox" index="6" ${linkConfig.displays[6]} class="td-checkbox__inner bleucb"></input><label>勾选此项，会根据云播清晰度，选择最高画质进行下载。</label></p>
+                <p><input type="checkbox" index="6" ${linkConfig.displays[6]} class="td-checkbox__inner bleucb"></input><label>勾选此项，不下载源文件，下载云播最高清晰度视频。</label></p>
                 </div>
                 `
                 swal.fire({
@@ -225,6 +219,30 @@
                     },
                 }).then(swalCloseFunc)
             })
+        },
+        isResetConfig(){
+            linkConfig = JSON.parse(localStorage.getItem("linkConfig")) || {
+                'local_path': 'D:\\Downloads',
+                'displays': ['checked', 'checked', 'checked', 'checked', 'checked', 'checked', '',''],
+                'aria2': {
+                    'ip': 'http://localhost',
+                    'port': '16800',
+                    'token': ''
+                },
+                'jgy':{
+                    'path':'ThunderPlaylist',
+                    'account':'',
+                    'password':''
+                },
+                'quality': ['selected', ''],
+            };
+            if(!linkConfig.jgy){
+                linkConfig.jgy = {
+                    'path':'ThunderPlaylist',
+                    'account':'',
+                    'password':''
+                }
+            }
         },
         setInitValue() {
             arryIndex = 0;
@@ -388,8 +406,8 @@
                 if (dataType.match('迅雷直链')) {
                     nameLinkTxt += `${item.name}\n${selectedURL}\n`;
                 }
-                if (dataType.match('idman')) {
-                    nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" /a&`;
+                if (dataType.match('idm')) {
+                    nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" /a\nping 127.0.0.1 -n 2 >nul\n`;
                 }
                 if (dataType.match('curl')) {
                     nameLinkTxt += `echo 正在下载这个文件：&echo "${linkConfig.local_path}${item.path}\\${item.name}"&curl -L "${selectedURL}" -o "${linkConfig.local_path}${item.path}\\${item.name}"\n\n`;
@@ -414,15 +432,15 @@
                 for (let index = 0; index < filetxt.length; index++) {
                     try {
                         selectedURL = linkConfig.displays[6]=='checked' && filetxt[index].medias.length > 0 ? filetxt[index].medias[0].url : filetxt[index].link;
-                        let timedelay = 100;
-                        if(!window.ariaNgUI || window.ariaNgUI.closed){
-                            window.ariaNgUI = window.open(`http://ariang.js.org/#!/settings/rpc/set/${linkConfig.aria2.ip.split('://')[0]}/${linkConfig.aria2.ip.split('://')[1]}/${linkConfig.aria2.port}/jsonrpc/${btoa(linkConfig.aria2.token)}`,'_blank');
-                            timedelay = 2000;//不延迟，不能修改rpc配置
-                        }
                         if(linkConfig.displays[7]==''){
                             await main.sendDataByRPC(index,selectedURL);
                         }
                         else{//使用ariaNg发送
+                            let timedelay = 100;
+                            if(!window.ariaNgUI || window.ariaNgUI.closed){
+                                window.ariaNgUI = window.open(`http://ariang.js.org/#!/settings/rpc/set/${linkConfig.aria2.ip.split('://')[0]}/${linkConfig.aria2.ip.split('://')[1]}/${linkConfig.aria2.port}/jsonrpc/${btoa(linkConfig.aria2.token)}`,'_blank');
+                                timedelay = 2000;//不延迟，不能修改rpc配置
+                            }
                             setTimeout(()=>{
                                 window.ariaNgUI == null?swalTitle = `导入失败，ariaNg页面被拦截了！`:swalTitle;
                                 window.ariaNgUI.location.href = `http://ariang.js.org/#!/new/task?url=${window.btoa(selectedURL)}&out=${encodeURIComponent(filetxt[index].name)}&dir=${encodeURIComponent(linkConfig.local_path)}${encodeURIComponent(filetxt[index].path)}`;
@@ -438,9 +456,10 @@
             } else {
                 let filenam = `${dataType.replace('.txt','')}${(new Date()).valueOf()}.txt`;
                 if (dataType.match('播放')) {
-                    filenam =`${$('.td-breadcrumb__item').last()[0].innerText}.m3u`;
+                    main.putDataToJGY(filenam,nameLinkTxt);
+                }else{
+                    this._downFlie(filenam, nameLinkTxt);
                 }
-                this._downFlie(filenam, nameLinkTxt);
             }
         },
         swalForInfo(satitle, satime, saposition) {
@@ -454,6 +473,33 @@
                     popup: 'bleu_sa_popup_min'
                 }
             })
+        },
+        putDataToJGY(filenam,nameLinkTxt){
+            if(linkConfig.jgy.account==''){
+                filenam =`${$('.td-breadcrumb__item').last()[0].innerText}.m3u`;
+                this._downFlie(filenam, nameLinkTxt);
+            }
+            else{
+                $.ajaxPrefilter((options)=> {
+                    if (options.crossDomain && $.support.cors) {
+                        options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
+                    }
+                });
+                $.ajax({
+                    type: "put",
+                    headers: {"authorization": `Basic ${btoa(linkConfig.jgy.account+':'+linkConfig.jgy.password)}`},
+                    url: `https://dav.jianguoyun.com/dav/${linkConfig.jgy.path}/xlPlaylist.m3u`,
+                    data:nameLinkTxt,
+                    crossDomain:true,
+                    success:()=> {
+                        main.swalForInfo("导入到坚果云成功！", 3000, 'top-end');
+                    },
+                    error: ()=> {
+                        window.open('https://cors-anywhere.herokuapp.com/','_blank');
+                        main.swalForInfo("导入到坚果云失败！", 3000, 'top-end');
+                    }
+                })
+            }
         },
         sendDataByRPC(index,selectedURL) {
             let jsonData = {
