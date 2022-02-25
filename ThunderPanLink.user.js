@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.1
+// @version      1.5.2
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -12,7 +12,8 @@
 // @supportURL   https://greasyfork.org/zh-CN/scripts/431256/feedback
 // @match        https://pan.xunlei.com/*
 // @exclude      https://pan.xunlei.com/s*
-// @grant        none
+// @grant        GM_xmlhttpRequest
+// @connect      *
 // @require      https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/11.1.0/sweetalert2.all.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js
 // @require      https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js
@@ -359,31 +360,17 @@
                 filenam = `${$('.td-breadcrumb__item').last()[0].innerText}.m3u`;
                 tools._downFlie(filenam, nameLinkTxt);
             } else {
-                $.ajaxPrefilter((options) => {
-                    if (options.crossDomain && $.support.cors) {
-                        options.url = 'https://cors-anywhere.herokuapp.com/' + options.url;
-                    }
-                });
-                $.ajax({
-                    type: "put",
-                    headers: {
-                        "authorization": `Basic ${btoa(linkConfig.jgy.account+':'+linkConfig.jgy.password)}`
+                let url = `https://dav.jianguoyun.com/dav/${linkConfig.jgy.path}/xlPlaylist.m3u`;
+                let header = {"authorization": `Basic ${btoa(linkConfig.jgy.account+':'+linkConfig.jgy.password)}`};
+                tools.bleuAjax('put',url , nameLinkTxt,header).then(
+                    (value)=>{
+                        value.status === 204?tools.swalForInfo("导入到坚果云成功！", 3000, 'top-end'):tools.swalForInfo("导入到坚果云失败！", 3000, 'top-end')
                     },
-                    url: `https://dav.jianguoyun.com/dav/${linkConfig.jgy.path}/xlPlaylist.m3u`,
-                    data: nameLinkTxt,
-                    crossDomain: true,
-                    success: () => {
-                        tools.swalForInfo("导入到坚果云成功！", 3000, 'top-end');
-                    },
-                    error: () => {
-                        window.open('https://cors-anywhere.herokuapp.com/', '_blank');
-                        tools.swalForInfo("导入到坚果云失败！", 3000, 'top-end');
-                    }
-                })
+                    ()=>{tools.swalForInfo("导入到坚果云失败！", 3000, 'top-end')});
             }
         },
         hookFetch() {
-            Object.defineProperty(window, "fetch", {
+            Object.defineProperty(unsafeWindow, "fetch", {
                 configurable: true,
                 enumerable: true,
                 // writable: true,
@@ -512,20 +499,21 @@
                 }
             })
         },
-        bleuAjax: function (TYPE, URL, DATA) {
+        bleuAjax: function (TYPE, URL, DATA,HEADER) {
             return new Promise((resolve, reject) => {
-                $.ajax({
-                    type: TYPE,
+                GM_xmlhttpRequest({
+                    method: TYPE,
                     timeout: 2000,
-                    headers: reqHeaders,
+                    headers: HEADER||reqHeaders,
                     url: URL,
                     data: DATA,
                     dataType: "json",
-                    success: function (textStatus) {
-                        resolve(textStatus);
+                    onload: function (res) {
+                        resolve(JSON.parse(res.response||null)||res.response||res);
+
                     },
-                    error: function (err) {
-                        reject(err);
+                    onerror: function (err) {
+                        reject(JSON.parse(err.response||null)||err.response||err);
                     }
                 });
             })
