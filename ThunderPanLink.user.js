@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.3
+// @version      1.5.4
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -428,7 +428,7 @@
             #bleu_select{margin: 0px 10px;background-color: #3F85FE;font-size: 15px;border: none;}
         `,
         swalHtml: function () {
-            return `<div><input type="button" style="display:${linkConfig.displays[0]==='checked'?'block':'none'}" class="btn_bleu" value="展示文件链接"></input></div>
+            return `<div><input type="button" style="display:${linkConfig.displays[0]==='checked'?'block':'none'}" class="btn_bleu" value="显示文件链接"></input></div>
                 <div><input type="button" style="display:${linkConfig.displays[1]==='checked'?'block':'none'}" class="btn_bleu xdown" value="复制idm下载链接"></input></div>
                 <div><input type="button" style="display:${linkConfig.displays[2]==='checked'?'block':'none'}" class="btn_bleu" value="curl下载.txt"></input></div>
                 <div><input type="button" style="display:${linkConfig.displays[3]==='checked'?'block':'none'}" class="btn_bleu xdown" value="复制Xdown下载链接"></input></div>
@@ -442,7 +442,7 @@
                 <p><label>目录</label><input type="text" class="bleu_inp" id="config_path" value="${linkConfig.local_path}"/></p>
                 </div>
                 <div class="bleu_config_item"><b>功能按钮显示</b>
-                <p><input type="checkbox" ${linkConfig.displays[0]} class="td-checkbox__inner bleu"></input><label>显示“展示文件链接”</label></p>
+                <p><input type="checkbox" ${linkConfig.displays[0]} class="td-checkbox__inner bleu"></input><label>显示“显示文件链接”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[1]} class="td-checkbox__inner bleu"></input><label>显示“复制idm下载链接”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[2]} class="td-checkbox__inner bleu"></input><label>显示“curl下载.txt”</label></p>
                 <p><input type="checkbox" ${linkConfig.displays[3]} class="td-checkbox__inner bleu"></input><label>显示“复制Xdown下载链接”</label></p>
