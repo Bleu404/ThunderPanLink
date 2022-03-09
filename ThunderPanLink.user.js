@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.2
+// @version      1.5.3
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -14,9 +14,9 @@
 // @exclude      https://pan.xunlei.com/s*
 // @grant        GM_xmlhttpRequest
 // @connect      *
-// @require      https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/11.1.0/sweetalert2.all.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js
-// @require      https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js
+// @require      https://cdn.jsdelivr.net/npm/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
+// @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
+// @require      https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js
 // ==/UserScript==
 (function () {
     'use strict';
@@ -294,8 +294,8 @@
                     nameLinkTxt += `#EXTINF:-1 ,${item.name}\n${item.medias[mediaIndex].url}\n`;
                 }
             });
-            if(dataType.match('展示')){
-                tools.swalForUI('展示文件链接',nameLinkTxt,'600px');
+            if(dataType.match('显示')){
+                tools.swalForUI('显示文件链接',nameLinkTxt,'600px');
             }
             else if (dataType.match('复制')) {
                 new ClipboardJS('.btn_bleu.xdown', {
