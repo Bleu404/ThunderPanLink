@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.5
+// @version      1.5.6
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -13,6 +13,7 @@
 // @match        https://pan.xunlei.com/*
 // @exclude      https://pan.xunlei.com/s*
 // @grant        GM_xmlhttpRequest
+// @grant        GM_download
 // @connect      *
 // @connect      localhost
 // @connect      127.0.0.1
@@ -281,7 +282,7 @@
                     return
                 }
                 if (dataType.match('文件链接')) {
-                    nameLinkTxt += `<a class="bleu_a" href=${selectedURL} download=${item.name.replace(/ /g,'_')}>${item.name}</a></p>`;
+                    nameLinkTxt += `<div style="padding: 5px;"><a class="bleu_a" href=${selectedURL} download=${item.name.replace(/ /g,'_')}>${item.name}</a><span class="bleu_gm">浏览器下载</span></div>`;
                 }
                 if (dataType.match('idm')) {
                     nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" /a\nping 127.0.0.1 -n 2 >nul\n`;
@@ -298,7 +299,13 @@
                 }
             });
             if(dataType.match('显示')){
-                tools.swalForUI('显示文件链接',nameLinkTxt,'600px');
+                tools.swalForUI('显示文件链接',nameLinkTxt,'550px');
+                $('.bleu_gm').on('click', function (e) {
+                    GM_download({
+                        url: e.target.previousElementSibling.getAttribute('href'),
+                        name: e.target.previousElementSibling.getAttribute('download')
+                    });
+                })
             }
             else if (dataType.match('复制')) {
                 new ClipboardJS('.btn_bleu.xdown', {
@@ -415,7 +422,7 @@
             .bleu_sa_title {font-size: 25px;}
             .bleu_sa_container{margin: 0;font-size: 20px;}
             .bleu_sa_popup {padding: 0 0 0;}
-            .bleu_a{text-decoration: underline;font-size: 16px;white-space: nowrap;background: linear-gradient(to right, red, blue);-webkit-background-clip: text;color: transparent;}
+            .bleu_a{text-decoration: underline;font-size: 16px;white-space: nowrap;background: linear-gradient(to right, red, blue);-webkit-background-clip: text;color: transparent;display: inline-block;width: 400px;}
             .bleu_a:hover{color: #3F85FE}
             .bleu_sa_footer{margin: 0;padding-top: 20px;}
             .bleu_sa_title_min{font-size: 20px;padding: 0;}
@@ -428,6 +435,9 @@
             .bleu_config_item input.td-checkbox__inner{margin: 0px 10px 0px 0px}
             .bleu_inp{width:60%}
             .bleu_config_item p{text-align: left;margin: 0px 20px;}
+            .bleu_gm{margin-left: 10px;font-size: 14px;background-color: #2670ea;color: white;border-radius: 5%;padding: 5px 10px;}
+            .bleu_gm:hover{background-color: #3F85FE;box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.2);}
+            .bleu_gm:active{background-color: #3F85FE;box-shadow: 0 5px #666;transform: translateY(4px)}
             #bleu_select{margin: 0px 10px;background-color: #3F85FE;font-size: 15px;border: none;}
         `,
         swalHtml: function () {
