@@ -14,6 +14,9 @@
 // @exclude      https://pan.xunlei.com/s*
 // @grant        GM_xmlhttpRequest
 // @connect      *
+// @connect      localhost
+// @connect      127.0.0.1
+// @connect      dav.jianguoyun.com
 // @require      https://cdn.jsdelivr.net/npm/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
 // @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
 // @require      https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js
@@ -352,7 +355,7 @@
                 }]
             }
             jsonData = JSON.stringify(jsonData);
-            return tools.bleuAjax('post', `${linkConfig.aria2.ip}:${linkConfig.aria2.port}/jsonrpc`, jsonData);
+            return tools.bleuAjax('post', `${linkConfig.aria2.ip}:${linkConfig.aria2.port}/jsonrpc`, jsonData,'');
         },
         //将播放列表存入坚果云
         putDataToJGY(filenam, nameLinkTxt) {
