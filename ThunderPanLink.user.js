@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.6
+// @version      1.5.7
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -11,7 +11,6 @@
 // @icon         https://pan.xunlei.com/icon.png
 // @supportURL   https://greasyfork.org/zh-CN/scripts/431256/feedback
 // @match        https://pan.xunlei.com/*
-// @exclude      https://pan.xunlei.com/s*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
 // @connect      *
@@ -411,6 +410,9 @@
                 childList: true,
                 subtree: true,
             });
+            if(location.href.indexOf('/s/')>0){
+                tools.swalForInfo(`❗不支持此页面,请先保存到云盘`, '', 'top-end')
+            }
         },
     }
     let tools = {
