@@ -427,7 +427,7 @@
             .bleu_a{text-decoration: underline;font-size: 16px;white-space: nowrap;background: linear-gradient(to right, red, blue);-webkit-background-clip: text;color: transparent;display: inline-block;width: 400px;}
             .bleu_a:hover{color: #3F85FE}
             .bleu_sa_footer{margin: 0;padding-top: 20px;}
-            .bleu_sa_title_min{font-size: 20px;padding: 0;}
+            .bleu_sa_title_min{font-size: 20px !important;padding: 0;}
             .bleu_sa_popup_min{padding: 0 0 0;width: auto;}
             .bleu_config{position: absolute;left: 5%;bottom: 10%;width: 60px;height: 60px;line-height: 60px;border-radius: 50%;cursor: pointer;font-size: 13px;background-color: #2670ea;color: #fff;text-align: center;}
             .bleu_config:hover{background-color: #3F85FE}
