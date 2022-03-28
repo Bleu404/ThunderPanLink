@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.7
+// @version      1.5.8
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -31,7 +31,6 @@
         'failNum': 0,
         'exit': false,
         'resultNum': 0,
-        'needHandle': true,
     }
     let $BleuButton, $bleu_config;
     isResetConfig();
@@ -129,7 +128,7 @@
                 }
                 isResetConfig();
                 try {
-                    running.needHandle && await main.getAllInfo();
+                    await main.getAllInfo();
                 } catch (error) {
                     console.log(error);
                     tools.swalForInfo('==请刷新页面重新尝试！==', '', 'center');
@@ -155,40 +154,26 @@
         },
         setInitValue() {
             arryIndex = 0;
-            fileArry = [];
+            fileArry = [[]];
             filetxt = [];
             temp_path = '';
             running.runStatus = true;
             running.successNum = 0;
             running.failNum = 0;
             running.resultNum = 0;
-            running.needHandle = false;
-            $('.pan-list-item').on('click', function () {
-                running.needHandle = true;
-            })
-            $('.pan-list-item a').on('click', function () {
-                running.needHandle = true;
-            })
-            $('.td-breadcrumb__item a').on('click', function () {
-                running.needHandle = true;
-            })
-            $('.td-checkbox__inner').on('click', function () {
-                running.needHandle = true;
-            })
         },
         async getAllInfo() {
             main.setInitValue();
-            await main.getFileSign();
-            if (running.exit) {
-                running.exit = false;
-                tools.swalForInfo('==请刷新页面重新尝试！==', '', 'center');
-                running.runStatus = false;
-                return;
-            }
-            $('li.pan-list-item').each((index, item) => {
-                if (item.getAttribute('class') === 'pan-list-item') {
-                    delete(fileArry[0][index]);
-                }
+            $('li.pan-list-item.pan-list-item-active').each((index,item) => {
+                let temp = item.__vue__.info
+                let itemInfo = {
+                    'kind': temp.kind,
+                    'id': temp.id,
+                    'name': temp.name,
+                    'phase': temp.phase,
+                    'trashed': temp.trashed
+                };
+                fileArry[arryIndex].push(itemInfo);
             });
             await main.getAllFiles(fileArry[0]);
             running.runStatus = false;
@@ -211,13 +196,8 @@
             temp_path = temp_path.substring(0, temp_path.lastIndexOf('\\'));
         },
         getFileSign(folder) {
-            let runURL;
-            if (folder) {
-                runURL = `https://api-pan.xunlei.com/drive/v1/files?limit=100&parent_id=${folder.id}&filters={"phase":{"eq":"${folder.phase}"},"trashed":{"eq":${folder.trashed}}}&with_audit=true`;
+            let runURL = `https://api-pan.xunlei.com/drive/v1/files?limit=100&parent_id=${folder.id}&filters={"phase":{"eq":"${folder.phase}"},"trashed":{"eq":${folder.trashed}}}&with_audit=true`;
                 runURL = encodeURI(runURL);
-            } else {
-                runURL = filesURL;
-            }
             fileArry[arryIndex] = [];
             return tools.bleuAjax('get', runURL, '').then(value => {
                 value.files.forEach((item) => {
@@ -525,10 +505,12 @@
                     dataType: "json",
                     onload: function (res) {
                         resolve(JSON.parse(res.response||null)||res.response||res);
-
                     },
                     onerror: function (err) {
                         reject(JSON.parse(err.response||null)||err.response||err);
+                    },
+                    ontimeout:function(err){
+                        reject(err);
                     }
                 });
             })
