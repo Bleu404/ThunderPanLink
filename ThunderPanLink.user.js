@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.8
+// @version      1.5.9
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
 // @compatible   chrome Tampermonkey
 // @compatible   firefox Tampermonkey
 // @license      MIT
-// @icon         https://pan.xunlei.com/icon.png
+// @icon         https://cdn.jsdelivr.net/gh/Bleu404/PRPO@latest/png/xunlei.png
 // @supportURL   https://greasyfork.org/zh-CN/scripts/431256/feedback
 // @match        https://pan.xunlei.com/*
 // @grant        GM_xmlhttpRequest
