@@ -1,13 +1,27 @@
 # ThunderPanLink
+
 <h1 style="color:red">脚本没有任何加速下载功能,只是改变下载或播放方式,想要加速可以充值</h1>
 <pre>写脚本的初衷只是为了下载一些老的美剧，和看视频，很多在线看视频网站都是菠菜广告
 客户端有p2p加速，下载热门资源会快
 </pre>
 🏷加载脚本失败,检查以下问题:🏷
-<pre>0.刷新页面
-1.确保脚本管理器中,只加载一个脚本进行测试
-2.检查是否能加载外部js文件，<a href="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js">点击此处，显示js文件则能加载</a>；不能加载，<a href="https://greasyfork.org/zh-CN/scripts/431256-%E8%BF%85%E9%9B%B7%E4%BA%91%E7%9B%98%E8%8E%B7%E5%8F%96%E7%9B%B4%E9%93%BE/discussions/101626">点击此处查看反馈</a>
-</pre>
+>1.刷新页面；清理浏览器缓存；退出浏览器重新登陆
+>
+>2.确保脚本管理器中,只加载一个脚本进行测试
+>
+>3.更换js文件,以下两种方案任选一种（访问网址看是否能加载js文件）：
+>>
+>>```
+// @require      https://cdn.bootcdn.net/ajax/libs/limonte-sweetalert2/11.1.0/sweetalert2.all.min.js  
+// @require      https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js  
+// @require      https://cdn.bootcdn.net/ajax/libs/clipboard.js/2.0.8/clipboard.min.js  
+>>```
+>>```
+// @require      https://unpkg.com/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
+// @require      https://unpkg.com/jquery@3.5.1/dist/jquery.min.js
+// @require      https://unpkg.com/clipboard@2.0.8/dist/clipboard.min.js
+>>```
+
 ⚔安装前注意事项:⚔
 <pre>1.本脚本没有任何加速下载功能,只是改变下载或播放方式,想要加速可以充值或活动
 2.网上有其他的<a href="https://xunlei.kinh.cc/">云盘在线解析</a>,成功与否跟网络有关系
