@@ -8,7 +8,7 @@
 // @compatible   chrome Tampermonkey
 // @compatible   firefox Tampermonkey
 // @license      MIT
-// @icon         https://cdn.jsdelivr.net/gh/Bleu404/PRPO@latest/png/xunlei.png
+// @icon         https://fastly.jsdelivr.net/gh/Bleu404/PRPO@latest/png/xunlei.png
 // @supportURL   https://greasyfork.org/zh-CN/scripts/431256/feedback
 // @match        https://pan.xunlei.com/*
 // @grant        GM_xmlhttpRequest
@@ -17,9 +17,9 @@
 // @connect      localhost
 // @connect      127.0.0.1
 // @connect      dav.jianguoyun.com
-// @require      https://cdn.jsdelivr.net/npm/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
-// @require      https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
-// @require      https://cdn.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js
+// @require      https://fastly.jsdelivr.net/npm/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
+// @require      https://fastly.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
+// @require      https://fastly.jsdelivr.net/npm/clipboard@2.0.8/dist/clipboard.min.js
 // ==/UserScript==
 (function () {
     'use strict';
