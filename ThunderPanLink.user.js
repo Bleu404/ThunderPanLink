@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.5.9
+// @version      1.6.0
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -24,7 +24,7 @@
 (function () {
     'use strict';
     const originFetch = fetch;
-    let linkConfig, reqHeaders, filesURL,arryIndex,fileArry,filetxt,temp_path;
+    let linkConfig, reqHeaders, filesURL,arryIndex,fileArry,filetxt,temp_path,OSflag;
     let running = {
         'runStatus': false,
         'successNum': 0,
@@ -186,14 +186,14 @@
                         await main.getDirectLink(loopArry[index].id);
                     }
                     if (loopArry[index].kind === 'drive#folder') {
-                        temp_path += `\\${loopArry[index].name}`;
+                        temp_path += `${OSflag}${loopArry[index].name}`;
                         await main.getFileSign(loopArry[index]);
                         await main.getAllFiles(fileArry[arryIndex - 1]);
                     }
                 }
 
             }
-            temp_path = temp_path.substring(0, temp_path.lastIndexOf('\\'));
+            temp_path = temp_path.substring(0, temp_path.lastIndexOf(OSflag));
         },
         getFileSign(folder) {
             let runURL = `https://api-pan.xunlei.com/drive/v1/files?limit=100&parent_id=${folder.id}&filters={"phase":{"eq":"${folder.phase}"},"trashed":{"eq":${folder.trashed}}}&with_audit=true`;
@@ -267,7 +267,7 @@
                     nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" /a\nping 127.0.0.1 -n 2 >nul\n`;
                 }
                 if (dataType.match('curl')) {
-                    nameLinkTxt += `echo 正在下载这个文件：&echo "${linkConfig.local_path}${item.path}\\${item.name}"&curl -L "${selectedURL}" -o "${linkConfig.local_path}${item.path}\\${item.name}"\n\n`;
+                    nameLinkTxt += `echo 正在下载这个文件：&echo "${linkConfig.local_path}${item.path}${OSflag}${item.name}"&curl -L "${selectedURL}" -o "${linkConfig.local_path}${item.path}${OSflag}${item.name}"\n\n`;
                 }
                 if (dataType.match('Xdown')) {
                     nameLinkTxt += `aria2c "${selectedURL}" --dir "${linkConfig.local_path}${item.path}" --out "${item.name}"\n`;
@@ -525,11 +525,19 @@
             elementA.click();
             document.body.removeChild(elementA);
         },
+        platform() {
+            OSflag="/";
+            let agent = navigator.userAgent.toLowerCase();
+            if (agent.indexOf("win") >= 0 || agent.indexOf("wow") >= 0) {
+                OSflag="\\";
+            }
+        }
     }
     window.onunload = () => {
         window.ariaNgUI && window.ariaNgUI.close();
     };
     main.hookFetch();
     main.addCssStyle();
+    tools.platform();
     main.initUI();
 })();
