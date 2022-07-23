@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.6.0
+// @version      1.6.1
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -119,6 +119,7 @@
             $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
             $bleu_config = $('<div class="bleu_config">直链配置</div>')
             $('.bleu_config').length == 0 && $('#__nuxt').append($bleu_config);
+            main.getHeaders();
         },
         addButtonEvent() {
             $BleuButton.on('click', async function () {
@@ -374,6 +375,22 @@
                 }
             })
         },
+        getHeaders() {
+            reqHeaders={};
+            reqHeaders.withCredentials = false;
+            reqHeaders['content-type'] = 'application/json';
+            for (let key in localStorage) {
+                let temp = localStorage.getItem(key)
+                if (key.indexOf('credentials') === 0) {
+                    reqHeaders.Authorization = JSON.parse(temp).token_type + ' ' + JSON.parse(temp).access_token;
+                    reqHeaders.clientid = key.substring(key.indexOf('_') + 1);
+                }
+                if (key.indexOf('captcha') === 0)
+                    reqHeaders['x-captcha-token'] = JSON.parse(temp).token
+                if (key === 'deviceid')
+                    reqHeaders['x-device-id'] = temp.substring(temp.indexOf('.') + 1, 32 + temp.indexOf('.') + 1)
+            }
+        },
         initUI() {
             let observer = new MutationObserver(function (mutationsList) {
                 for (let mutation of mutationsList) {
@@ -536,7 +553,7 @@
     window.onunload = () => {
         window.ariaNgUI && window.ariaNgUI.close();
     };
-    main.hookFetch();
+    //main.hookFetch();
     main.addCssStyle();
     tools.platform();
     main.initUI();
