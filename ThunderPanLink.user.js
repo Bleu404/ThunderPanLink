@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.6.1
+// @version      1.6.2
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -119,10 +119,10 @@
             $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
             $bleu_config = $('<div class="bleu_config">直链配置</div>')
             $('.bleu_config').length == 0 && $('#__nuxt').append($bleu_config);
-            main.getHeaders();
         },
         addButtonEvent() {
             $BleuButton.on('click', async function () {
+                main.getHeaders();
                 tools.swalForInfo('==获取直链中,请等待==', '', 'center');
                 if (running.runStatus) {
                     return
