@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.6.2
+// @version      1.6.3
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -16,6 +16,7 @@
 // @connect      *
 // @connect      localhost
 // @connect      127.0.0.1
+// @connect      xunlei.com
 // @connect      dav.jianguoyun.com
 // @require      https://fastly.jsdelivr.net/npm/sweetalert2@11.1.0/dist/sweetalert2.all.min.js
 // @require      https://fastly.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js
@@ -32,7 +33,7 @@
         'exit': false,
         'resultNum': 0,
     }
-    let $BleuButton, $bleu_config;
+    let $BleuButton, $bleu_config,$deleteBut;
     isResetConfig();
     //退出配置保存数据
     function swalCloseFunc() {
@@ -115,7 +116,9 @@
         },
         addElements() {
             $BleuButton = $('<div id="bleu_btn" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-download"></i><span>直链</span></div>');
+            $deleteBut = $('<div id="bleu_del" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-trash"></i><span>清空回收站</span></div>');
             $('div.pan-list-menu').prepend($BleuButton);
+            $('div.pan-list-menu').append($deleteBut);
             $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
             $bleu_config = $('<div class="bleu_config">直链配置</div>')
             $('.bleu_config').length == 0 && $('#__nuxt').append($bleu_config);
@@ -151,6 +154,11 @@
             $bleu_config.on('click', function () {
                 isResetConfig();
                 tools.swalForUI(`直链配置`, tools.swalConfig(),'400px').then(swalCloseFunc);
+            })
+            $deleteBut.on('click', function () {
+                main.getHeaders();
+                tools.bleuAjax('PATCH', 'https://api-pan.xunlei.com/drive/v1/files/trash:empty', '"{"space":""}"');
+                location.reload();
             })
         },
         setInitValue() {
@@ -265,7 +273,7 @@
                     nameLinkTxt += `<div style="padding: 5px;"><a class="bleu_a" href=${selectedURL} download=${item.name.replace(/ /g,'_')}>${item.name}</a><span class="bleu_gm">浏览器下载</span></div>`;
                 }
                 if (dataType.match('idm')) {
-                    nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" /a\nping 127.0.0.1 -n 2 >nul\n`;
+                    nameLinkTxt += `idman /d "${selectedURL}" /p "${linkConfig.local_path}${item.path}" /f "${item.name}" \nping 127.0.0.1 -n 2 >nul\n`;
                 }
                 if (dataType.match('curl')) {
                     nameLinkTxt += `echo 正在下载这个文件：&echo "${linkConfig.local_path}${item.path}${OSflag}${item.name}"&curl -L "${selectedURL}" -o "${linkConfig.local_path}${item.path}${OSflag}${item.name}"\n\n`;
