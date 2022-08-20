@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.6.3
+// @version      1.6.4
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -81,6 +81,9 @@
             'quality': qualityAry,
             'autoClick': autoClick,
         }));
+        if (local_path.indexOf("/") >= 0) {
+            OSflag = "/";
+        }
         window.ariaNgUI && window.ariaNgUI.close();
     }
     //初始或者取配置json
@@ -551,10 +554,9 @@
             document.body.removeChild(elementA);
         },
         platform() {
-            OSflag="/";
-            let agent = navigator.userAgent.toLowerCase();
-            if (agent.indexOf("win") >= 0 || agent.indexOf("wow") >= 0) {
-                OSflag="\\";
+            OSflag = "\\";
+            if (linkConfig.local_path.indexOf("/") >= 0) {
+                OSflag = "/";
             }
         }
     }
