@@ -23,16 +23,7 @@
 ```
 
 ⚔安装前注意事项:⚔
-<pre>1.本脚本没有任何加速下载功能,只是改变下载或播放方式,想要加速可以充值或活动
-2.网上有其他的<a href="https://xunlei.kinh.cc/">云盘在线解析</a>,成功与否跟网络有关系
-3.脚本不能获得敏感资源的直链,如果是想边下边播,可以尝试🧲<a href="https://webtorrent.io/desktop/">webtorrent</a>
-</pre>
-🐱‍👤AriaNG连接本地失败：🐱‍👤
-<pre>https://developer.chrome.com/blog/private-network-access-update/
-这是因为 Chromium 升级到高版本会出现的问题,三个解决方法
-1.在地址栏中输入chrome://flags/#block-insecure-private-network-requests，将其设置为disabled；
-2.用火狐浏览器来代替；
-3.将本地的ariaNg保存至标签栏，用到的时候手动打开。
+<pre>脚本不能获得敏感资源的直链,如果是想边下边播,可以尝试🧲<a href="https://webtorrent.io/desktop/">webtorrent</a>
 </pre>
 🐱‍🚀导入坚果云失败：🐱‍🚀
 <pre>
@@ -44,7 +35,7 @@
 
 🔐2.<strong>“↓直链”</strong>点击之后，一段时间后出现按钮选择界面，按钮功能如下：
 
-🧱3.<strong>“显示文件链接”</strong>点击界面中的链接，可直接下载；
+🧱3.<strong>“显示文件链接”</strong>点击界面中的链接，可调用idm下载；
 
 🏆4.<strong>“复制idm下载链接”</strong>点击会复制导入idm的命令，具体用法如下：
  
@@ -60,7 +51,7 @@
 
 💊6.<strong>“复制Xdown下载链接”</strong>，复制完直接打开Xdown，粘贴就行了。
 </br></br>
-🥇7.<strong>“基于aria2发送RPC任务”</strong>，点击可一键导入到支持aria2 RPC的客户端。<strong>确保Aria2后台打开了</strong>，不然导入不进去。
+🥇7.<strong>“基于aria2发送RPC任务”</strong>，点击可一键导入到Aria2或Motrix。<strong>确保后台打开了，不然失败。</strong>
 
 <pre><strong>可在左侧的“直链配置”，配置地址、端口、token</strong></pre>
 
@@ -72,9 +63,3 @@
 
 ⚙9.<strong>直链配置</strong>
 <pre>加入视频专用下载，不会下载原始资源，会根据云播最高清晰度下载视频</pre>
-
-📖A.<strong>aria2远程发送问题汇总</strong>
-<pre>1.远程发送失败，可以在“配置”中，勾选通过ariaNg发送，（如发送到vps上的aria2）
-2.远程发送失败，通过ariaNg发送成功但多任务不成功，可以选择远程端使用脚本的本地发送
-3.还有问题的话，可以不要勾选ariaNg发送，截一张控制台的图进行反馈
-</pre>
