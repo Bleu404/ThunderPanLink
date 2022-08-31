@@ -38,7 +38,7 @@
   >1.<a href="https://jingyan.baidu.com/article/8275fc86403a3546a03cf6f0.html" target="_blank">设置window环境变量path</a>，**然后将idm的安装路径添加进去**（只需要设置一次，最终效果如最下方图）；  
    2.按**window键+R**，输入**cmd**，点击**确定**，**Ctrl+V**粘贴命令，就会导入idm，然后手动开始下载。
 
-* 3.**curl下载.txt"**  
+* 3.**curl下载.txt**  
   >点击会下载txt文件，文件里**每一行是一条下载命令**用法如下：  
   >1.按**window键+R**，输入**cmd**，点击确定，复制一行命令，**按Enter（回车键）**，就会下载；按**CTRL+c**停止下载；  
    2.curl命令还有其他下载方式，分段下载，加代理等，感兴趣可以自行搜索。  
