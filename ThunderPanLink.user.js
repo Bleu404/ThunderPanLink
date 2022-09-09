@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      1.6.4
-// @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）。
+// @version      2.0.0
+// @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）；添加隐藏回收站功能，可自由彻底删除、还原。
 // @author       bleu
 // @compatible   edge Tampermonkey
 // @compatible   chrome Tampermonkey
@@ -13,6 +13,7 @@
 // @match        https://pan.xunlei.com/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_download
+// @grant        GM_registerMenuCommand
 // @connect      *
 // @connect      localhost
 // @connect      127.0.0.1
@@ -33,7 +34,7 @@
         'exit': false,
         'resultNum': 0,
     }
-    let $BleuButton, $bleu_config,$deleteBut;
+    let $BleuButton,$deleteBut;
     isResetConfig();
     //退出配置保存数据
     function swalCloseFunc() {
@@ -119,12 +120,21 @@
         },
         addElements() {
             $BleuButton = $('<div id="bleu_btn" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-download"></i><span>直链</span></div>');
-            $deleteBut = $('<div id="bleu_del" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-trash"></i><span>清空回收站</span></div>');
-            $('div.pan-list-menu').prepend($BleuButton);
-            $('div.pan-list-menu').append($deleteBut);
+            $deleteBut = $('<li id="bleu_trash" class=""><p class="bar-box"><i class="xlpfont xlp-trash"></i> <span>回收站</span></p></li>');
+            $('div.pan-wrapper-asider ul li').length == 4&&$('div.pan-wrapper-asider ul').append($deleteBut);
+            $('div.pan-list-menu').length>0&&$('div.pan-list-menu')[0].innerText.indexOf('彻底删除')!=0&&$('div.pan-list-menu').prepend($BleuButton);
             $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
-            $bleu_config = $('<div class="bleu_config">直链配置</div>')
-            $('.bleu_config').length == 0 && $('#__nuxt').append($bleu_config);
+
+            if(location.href.indexOf('https://pan.xunlei.com/?filter=trash')==0){
+                $('#bleu_trash')[0].className = 'on';
+            }
+            $('div.pan-wrapper-asider ul li').on('click', ()=>{
+                $('div.pan-list-menu').length>0&&$('div.pan-list-menu')[0].innerText.indexOf('彻底删除')!=0&&$('div.pan-list-menu').prepend($BleuButton);
+                if(location.href.indexOf('https://pan.xunlei.com/?filter=trash')!=0){
+                    $('#bleu_trash')[0].className = '';
+                }
+            })
+            
         },
         addButtonEvent() {
             $BleuButton.on('click', async function () {
@@ -154,14 +164,13 @@
                     }, 1000);
                 }
             })
-            $bleu_config.on('click', function () {
+            GM_registerMenuCommand('直链配置', () => {
                 isResetConfig();
                 tools.swalForUI(`直链配置`, tools.swalConfig(),'400px').then(swalCloseFunc);
             })
             $deleteBut.on('click', function () {
-                main.getHeaders();
-                tools.bleuAjax('PATCH', 'https://api-pan.xunlei.com/drive/v1/files/trash:empty', '"{"space":""}"');
-                location.reload();
+                this.className='on';
+                location.href ='https://pan.xunlei.com/?filter=trash&path=%2F';
             })
         },
         setInitValue() {
@@ -358,7 +367,7 @@
         //将播放列表存入坚果云
         putDataToJGY(filenam, nameLinkTxt) {
             if (linkConfig.jgy.account == '') {
-                filenam = `${$('.td-breadcrumb__item').last()[0].innerText}.m3u`;
+                filenam = `迅雷云盘播放列表.m3u`;
                 tools._downFlie(filenam, nameLinkTxt);
             } else {
                 let url = `https://dav.jianguoyun.com/dav/${linkConfig.jgy.path}/xlPlaylist.m3u`;
@@ -406,7 +415,7 @@
             let observer = new MutationObserver(function (mutationsList) {
                 for (let mutation of mutationsList) {
                     if (mutation.type === 'childList') {
-                        if (mutation.target.querySelector('.pan-list-menu') && $('#bleu_btn').length == 0) {
+                        if (mutation.target.querySelector('.pan-wrapper-asider') && $('#bleu_btn').length == 0) {
                             main.addElements();
                             main.addButtonEvent();
                             break;
