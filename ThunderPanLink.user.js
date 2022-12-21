@@ -121,7 +121,7 @@
         addElements() {
             $BleuButton = $('<div id="bleu_btn" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-download"></i><span>直链</span></div>');
             $deleteBut = $('<li id="bleu_trash" class=""><p class="bar-box"><i class="xlpfont xlp-trash"></i> <span>回收站</span></p></li>');
-            $('div.pan-wrapper-asider ul li').length == 4&&$('div.pan-wrapper-asider ul').append($deleteBut);
+            $('div.pan-wrapper-asider ul').append($deleteBut);
             $('div.pan-list-menu').length>0&&$('div.pan-list-menu')[0].innerText.indexOf('彻底删除')!=0&&$('div.pan-list-menu').prepend($BleuButton);
             $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
 
