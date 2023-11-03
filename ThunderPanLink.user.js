@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      2.0.1
+// @version      2.0.2
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）；添加隐藏回收站功能，可自由彻底删除、还原。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -119,11 +119,11 @@
             document.querySelector('head').appendChild(style);
         },
         addElements() {
-            $BleuButton = $('<div id="bleu_btn" class="pan-list-menu-item pan-list-menu-item__active"><i class="xlpfont xlp-download"></i><span>直链</span></div>');
+            $BleuButton = $('<div id="bleu_btn" class="FileMenu__item--7MGwA active"><i class="xlpfont xlp-download"></i><span>直链</span></div>');
             $deleteBut = $('<li id="bleu_trash" class=""><p class="bar-box"><i class="xlpfont xlp-trash"></i> <span>回收站</span></p></li>');
             $('div.pan-wrapper-asider ul li').length == 5&&$('div.pan-wrapper-asider ul').append($deleteBut);
             $('div.pan-list-menu').length>0&&$('div.pan-list-menu')[0].innerText.indexOf('彻底删除')!=0&&$('div.pan-list-menu').prepend($BleuButton);
-            $('.file-features-btns-wrap').length != 0 ? $('.file-features-btns-wrap').prepend($BleuButton) : $BleuButton;
+            $('.FileMenu__menu--XBFEH').length != 0 ? $('.FileMenu__menu--XBFEH').prepend($BleuButton) : $BleuButton;
 
             if(location.href.indexOf('https://pan.xunlei.com/?filter=trash')==0){
                 $('#bleu_trash')[0].className = 'on';
@@ -185,7 +185,7 @@
         },
         async getAllInfo() {
             main.setInitValue();
-            $('li.pan-list-item.pan-list-item-active').each((index,item) => {
+            $('li.SourceListItem__item--XxpOC.SourceListItem__active--4U0f4').each((index,item) => {
                 let temp = item.__vue__.info
                 let itemInfo = {
                     'kind': temp.kind,
