@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         迅雷云盘
 // @namespace    http://tampermonkey.net/
-// @version      2.0.2
+// @version      2.0.3
 // @description  获取迅雷云盘的文件链接，可利用本地播放器看视频；可将播放列表导入坚果云；可利用其他工具下载（如idm，curl，Xdown，Motrix，Aria2）；添加隐藏回收站功能，可自由彻底删除、还原。
 // @author       bleu
 // @compatible   edge Tampermonkey
@@ -220,7 +220,7 @@
             let runURL = `https://api-pan.xunlei.com/drive/v1/files?limit=100&parent_id=${folder.id}&filters={"phase":{"eq":"${folder.phase}"},"trashed":{"eq":${folder.trashed}}}&with_audit=true`;
                 runURL = encodeURI(runURL);
             fileArry[arryIndex] = [];
-            return tools.bleuAjax('get', runURL, '').then(value => {
+            return tools.bleuAjax('get', runURL).then(value => {
                 value.files.forEach((item) => {
                     let temp = {
                         'kind': item.kind,
@@ -239,7 +239,7 @@
         },
         getDirectLink(sign) {
             let URL = `https://api-pan.xunlei.com/drive/v1/files/${sign}`;
-            return tools.bleuAjax('get', URL, '').then(value => {
+            return tools.bleuAjax('get', URL).then(value => {
                 running.successNum++;
                 let mediasLink = [];
                 if (value.medias != []) {
